@@ -1,0 +1,2 @@
+﻿ID,Pre-Text,Code,Post-Text,Blooms Taxonomy,Hints,Answer,Source
+1,"","x = [2, 1, 4, 5, 7]\nlimit = 3\ni = 0\nsum = 0\nwhile sum < limit and i < len(x):\n    i += 1\n    sum += x[i]\n","After this code is executed, list ""x"" contains the values:",C,"[""Test"", ""Test2"", ""Test3""]","\s*[\s*3\s*,\s*2,\s*2\s*,\s*0\s*]\s*",Paper
