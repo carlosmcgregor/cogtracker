@@ -1,6 +1,8 @@
 from django.db import models
 from django.core.exceptions import ValidationError
 from django.utils.translation import gettext_lazy as _
+from django.utils import timezone
+
 from six import string_types
 
 
@@ -132,6 +134,7 @@ class Experiment(models.Model):
     question_order = models.JSONField(validators=[validate_question_order], default=list)
     survey_question_order = models.JSONField(validators=[validate_survey_question_order], default=list)
     consent_form = models.TextField(blank=False)
+    instructions = models.TextField(blank=False)
     check_answers = models.BooleanField(default=True)
 
     class Meta:
@@ -139,7 +142,8 @@ class Experiment(models.Model):
 
 
 class Participant(models.Model):
-    participant_code = models.IntegerField()
+    code = models.IntegerField()
+    name = models.CharField(max_length=200, blank=False)
     experiment_id = models.ForeignKey(Experiment, on_delete=models.SET_NULL, null=True)
     # Answers come in the form of a list of dicts
     # e.g. [{"question": "1", "answer": "25", "timestamp": "2021-04-01 15:00"}]
@@ -153,3 +157,8 @@ class Participant(models.Model):
     # e.g. [{"page": "question1", "timestamp": "2021-04-01 15:00", "mouse_x": "25", "mouse_y": "400", "key_press": "k"}]
     interaction = models.JSONField(default=list)
 
+    consent = models.CharField(max_length=200, blank=False, default=str)
+    consent_timestamp = models.TimeField(auto_now_add=True)
+
+    def __str__(self):
+        return self.participant_code

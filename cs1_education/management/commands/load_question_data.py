@@ -101,6 +101,7 @@ class Command(BaseCommand):
             experiment.question_order = question_order
             experiment.survey_question_order = survey_question_order
             experiment.consent_form = row['Consent Form']
+            experiment.instructions = row['Instructions']
             try:
                 experiment.save()
             except IntegrityError:
