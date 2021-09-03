@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+
+{% load crispy_forms_tags %}
+
+{% block head %}
+    <title>Thank you!</title>
+{% endblock %}
+
+{% block content %}
+    <div id="consent-form">
+            {% autoescape off %}
+                {{ farewell_message }}
+            {% endautoescape %}
+    </div>
+{% endblock %}

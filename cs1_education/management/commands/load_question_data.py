@@ -102,6 +102,8 @@ class Command(BaseCommand):
             experiment.survey_question_order = survey_question_order
             experiment.consent_form = row['Consent Form']
             experiment.instructions = row['Instructions']
+            experiment.hint_timeout = int(row['Hint Timeout'])
+            experiment.farewell_message = row['Farewell Message']
             try:
                 experiment.save()
             except IntegrityError:

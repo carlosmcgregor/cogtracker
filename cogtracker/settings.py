@@ -133,3 +133,6 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 # Adding Bootstrap to views
 CRISPY_TEMPLATE_PACK = 'bootstrap4'
+
+# Keeps session on page db
+SESSION_ENGINE = "django.contrib.sessions.backends.db"

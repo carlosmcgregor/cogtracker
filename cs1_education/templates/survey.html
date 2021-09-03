@@ -3,8 +3,26 @@
 
 {% block head %}
     <title>Survey</title>
+
     <script src="{% static 'survey/survey.jquery.min.js' %}" type="text/javascript"></script>
     <link href="{% static 'survey/survey.min.css' %}" rel="stylesheet"/>
+
+    <script src="{% static 'js/mdb.min.js' %}" type="text/javascript"></script>
+    <link href="{% static 'css/mdb.min.css' %}" rel="stylesheet"/>
+
+    {#    <script src="https://unpkg.com/jquery"></script>#}
+    {#    <script src="https://unpkg.com/survey-jquery@1.8.61/survey.jquery.min.js"></script>#}
+    {#    <link rel="stylesheet" href="./index.css">#}
+    {#    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700|Material+Icons"/>#}
+    {#    <link rel="stylesheet"#}
+    {#          href="https://unpkg.com/bootstrap-material-design@4.1.1/dist/css/bootstrap-material-design.min.css"#}
+    {#          integrity="sha384-wXznGJNEXNG1NFsbm0ugrLFMQPWswR3lds2VeinahP8N0zJw9VWSopbjv2x7WCvX" crossorigin="anonymous"/>#}
+    {#    <script src="https://unpkg.com/popper.js@1.12.6/dist/umd/popper.js"#}
+    {#            integrity="sha384-fA23ZRQ3G/J53mElWqVJEGJzU0sTs+SvzG8fXVWP+kJQ1lwFAOkcUOysnlKJC33U"#}
+    {#            crossorigin="anonymous"></script>#}
+    {#    <script src="https://unpkg.com/bootstrap-material-design@4.1.1/dist/js/bootstrap-material-design.js"#}
+    {#            integrity="sha384-CauSuKpEqAFajSpkdjv3z9t8E7RlpJ1UP0lKM/+NdtSarroVKu069AlsRPKkFBz9"#}
+    {#            crossorigin="anonymous"></script>#}
     <script>
       $(document).ready(function () {
         $('body').bootstrapMaterialDesign();
@@ -17,6 +35,190 @@
     <div class="container">
         <div id="surveyElement" style="display:inline-block;width:100%;"></div>
         <div id="surveyResult"></div>
+        <script>
+
+          Survey.defaultBootstrapMaterialCss.navigationButton = "btn btn-green";
+          Survey.defaultBootstrapMaterialCss.rating.item = "btn btn-default my-rating";
+          Survey
+            .StylesManager
+            .applyTheme("bootstrapmaterial");
+
+          var json = {
+            pages: [
+              {% for page in surveys %}
+                {
+                  questions:
+                    [
+                      {% for survey in page %}
+                        {% if survey.scale == 0 %}
+                          {
+                            type: "text",
+                            name: "{{ survey.text }}",
+                            title: "{{ survey.text }}"
+                          },
+                        {% else %}
+                          {
+                            type: "rating",
+                            name: "{{ survey.label_text }}",
+                            title: "{{ survey.text }}",
+                            isRequired: true,
+                            rateMin: 0,
+                            rateMax: {{ survey.scale_index }},
+                            minRateDescription: "{{ survey.first_element }}",
+                            maxRateDescription: "{{ survey.last_element }}"
+                            {#type: "radiogroup",#}
+                            {#name: "{{ survey.text }}",#}
+                            {#title: "{{ survey.text }}",#}
+                            {#choices: [#}
+                            {#  {% for value in survey.scale_label.values %}#}
+                            {#    "{{ value }}",#}
+                            {#  {% endfor %}#}
+                            {#]#}
+                          },
+                        {% endif %}
+                      {% endfor %}
+                    ]
+                }
+              {% endfor %}
+            ]
+          };
+
+          {#    [#}
+          {#    {#}
+          {#      questions: [#}
+          {#        {#}
+          {#          type: "radiogroup",#}
+          {#          name: "price to competitors",#}
+          {#          title: "Compared to our competitors, do you feel the Product is",#}
+          {#          choices: ["Less expensive", "Priced about the same", "More expensive", "Not sure"]#}
+          {#        }#}
+          {#      ]#}
+          {#    },#}
+          {#    {#}
+          {#      questions: [#}
+          {#        {#}
+          {#          type: "matrix",#}
+          {#          name: "Quality",#}
+          {#          title: "Please indicate if you agree or disagree with the following statements",#}
+          {#          columns: [#}
+          {#            {#}
+          {#              value: 1,#}
+          {#              text: "Strongly Disagree"#}
+          {#            }, {#}
+          {#              value: 2,#}
+          {#              text: "Disagree"#}
+          {#            }, {#}
+          {#              value: 3,#}
+          {#              text: "Neutral"#}
+          {#            }, {#}
+          {#              value: 4,#}
+          {#              text: "Agree"#}
+          {#            }, {#}
+          {#              value: 5,#}
+          {#              text: "Strongly Agree"#}
+          {#            }#}
+          {#          ],#}
+          {#          rows: [#}
+          {#            {#}
+          {#              value: "affordable",#}
+          {#              text: "Product is affordable"#}
+          {#            }, {#}
+          {#              value: "does what it claims",#}
+          {#              text: "Product does what it claims"#}
+          {#            }, {#}
+          {#              value: "better then others",#}
+          {#              text: "Product is better than other products on the market"#}
+          {#            }, {#}
+          {#              value: "easy to use",#}
+          {#              text: "Product is easy to use"#}
+          {#            }#}
+          {#          ]#}
+          {#        }, {#}
+          {#          type: "rating",#}
+          {#          name: "satisfaction",#}
+          {#          title: "How satisfied are you with the Product?",#}
+          {#          mininumRateDescription: "Not Satisfied",#}
+          {#          maximumRateDescription: "Completely satisfied"#}
+          {#        }, {#}
+          {#          type: "rating",#}
+          {#          name: "recommend friends",#}
+          {#          visibleIf: "{satisfaction} > 3",#}
+          {#          title: "How likely are you to recommend the Product to a friend or co-worker?",#}
+          {#          mininumRateDescription: "Will not recommend",#}
+          {#          maximumRateDescription: "I will recommend"#}
+          {#        }, {#}
+          {#          type: "comment",#}
+          {#          name: "suggestions",#}
+          {#          title: "What would make you more satisfied with the Product?"#}
+          {#        }#}
+          {#      ]#}
+          {#    }, {#}
+          {#      questions: [#}
+          {#        {#}
+          {#          type: "radiogroup",#}
+          {#          name: "price to competitors",#}
+          {#          title: "Compared to our competitors, do you feel the Product is",#}
+          {#          choices: ["Less expensive", "Priced about the same", "More expensive", "Not sure"]#}
+          {#        }, {#}
+          {#          type: "radiogroup",#}
+          {#          name: "price",#}
+          {#          title: "Do you feel our current price is merited by our product?",#}
+          {#          choices: ["correct|Yes, the price is about right", "low|No, the price is too low for your product", "high|No, the price is too high for your product"]#}
+          {#        }, {#}
+          {#          type: "multipletext",#}
+          {#          name: "pricelimit",#}
+          {#          title: "What is the... ",#}
+          {#          items: [#}
+          {#            {#}
+          {#              name: "mostamount",#}
+          {#              title: "Most amount you would every pay for a product like ours"#}
+          {#            }, {#}
+          {#              name: "leastamount",#}
+          {#              title: "The least amount you would feel comfortable paying"#}
+          {#            }#}
+          {#          ]#}
+          {#        }#}
+          {#      ]#}
+          {#    }, {#}
+          {#      questions: [#}
+          {#        {#}
+          {#          type: "text",#}
+          {#          name: "email",#}
+          {#          title: "Thank you for taking our survey. Your survey is almost complete, please enter your email address in the box below if you wish to participate in our drawing, then press the 'Submit' button."#}
+          {#        }#}
+          {#      ]#}
+          {#    }#}
+          {#  ]#}
+          {#{#}
+          {#  ;#}
+
+          window.survey = new Survey.Model(json);
+
+          survey
+            .onComplete
+            .add(
+              function (sender) {
+                $.ajax('.', {
+                  data: JSON.stringify(sender.data, null, 3),
+                  contentType: 'application/json',
+                  type: 'POST',
+                  success: setTimeout(
+                    function () {
+                      window.location.href = "../q/{{ next_question }}";
+                    }, 2000)
+              })
+              });
+
+          survey.completedHtml = "<div><b>Thank you for completing the question survey. Please wait.</b></div>"
+          {#  function (sender) {#}
+          {#  document#}
+          {#    .querySelector('#surveyResult')#}
+          {#    .textContent = "Result JSON:\n" + JSON.stringify(sender.data, null, 3);#}
+          {#window.location.href = "../q/{{ next_question }}";#}
+
+          $("#surveyElement").Survey({model: survey});
+          {#;#}
+        </script>
     </div>
     </body>
 {% endblock %}

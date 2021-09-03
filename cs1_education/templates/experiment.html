@@ -4,61 +4,31 @@
 
 {% block head %}
     <title>Experiment</title>
-    <script>
-    $("form").on('submit', function (e) {
-      e.preventDefault();
-      console.log("Moving to next page");
-      document.getElementById("consent-form").style.display = 'none';
-      document.getElementById("consent-form").style.display = 'block';
-    });
-      function nextPage() {
-        console.log("Moving to next page");
-        document.getElementById("consent-form").style.display = 'none';
-        document.getElementById("consent-form").style.display = 'block';
-      }
-    </script>
 {% endblock %}
 
 {% block content %}
     <div id="consent-form" style="display: {{ consent_form_display }};">
         <div class="container">
             <br/>
-            <h3>Consent Form</h3>
+{#            <h3>Consent Form</h3>#}
             {% autoescape off %}
                 {{ consent_form }}
             {% endautoescape %}
         </div>
         <div class="container">
-                        <form class="w-50" action="." method="post">
-                            {% crispy form %}
-{#                            <button type="submit" class="btn btn-primary">Next</button>#}
-                        </form>
-{#            <form class="w-50" action="." method="post">#}
-{#                <div class="form-group">#}
-{#                    <label for="inputName">Your name</label>#}
-{#                    {{ form.name(class='form-control') }}#}
-{#                    <input type="text" class="form-control" id="inputName" placeholder="Please enter your name">#}
-{#                </div>#}
-{#                <div class="form-group">#}
-{#                    <label for="inputParticipantId">Your participant ID</label>#}
-{#                    {{ form.code (class = 'form-control') }}#}
-{#                    <input type="text" class="form-control" id="inputParticipantId"#}
-{#                           aria-describedby="participantIdHelp" placeholder="Please enter your participant ID">#}
-{#                    <small id="participantIdHelp" class="form-text text-muted">#}
-{#                        If you have not been provided with a participant ID, please request one.#}
-{#                    </small>#}
-{#                </div>#}
-{#                <button type="submit" class="btn btn-primary">Next</button>#}
-{#            </form>#}
+            <form class="w-50" action="." method="post">
+                {% crispy form %}
+            </form>
         </div>
     </div>
     <div id="instructions" style="display: {{ instructions_display }};">
         <div class="container">
+            <br/>
+            <h3>Instructions</h3>
             {% autoescape off %}
                 {{ instructions }}
             {% endautoescape %}
             <a href="../q/{{ next_question }}" class="btn btn-primary" role="button">Next</a>
-{#            <button type="button" class="btn btn-primary">Next</button>#}
         </div>
     </div>
 {% endblock %}

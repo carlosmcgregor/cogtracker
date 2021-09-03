@@ -3,6 +3,8 @@ from django.core.exceptions import ValidationError
 from django.utils.translation import gettext_lazy as _
 from django.utils import timezone
 
+import re
+
 from six import string_types
 
 
@@ -128,6 +130,25 @@ class SurveyQuestion(models.Model):
     scale = models.IntegerField(default=0)
     scale_label = models.JSONField(validators=[validate_position_dict], default=dict)
 
+    @property
+    def label_text(self):
+        pattern = re.compile('[\W_]+')
+        text = pattern.sub(' ', self.text)
+        split_text = text.lower().split(' ')
+        return '_'.join(split_text[:2] if len(split_text) >= 2 else split_text)
+
+    @property
+    def first_element(self):
+        return self.scale_label[str(0)]
+
+    @property
+    def last_element(self):
+        return self.scale_label[str(self.scale_index)]
+
+    @property
+    def scale_index(self):
+        return int(self.scale) - 1
+
 
 class Experiment(models.Model):
     # questions = models.ManyToManyField(Question)
@@ -135,7 +156,9 @@ class Experiment(models.Model):
     survey_question_order = models.JSONField(validators=[validate_survey_question_order], default=list)
     consent_form = models.TextField(blank=False)
     instructions = models.TextField(blank=False)
+    farewell_message = models.TextField(default="Thank you for participating in this experiment.")
     check_answers = models.BooleanField(default=True)
+    hint_timeout = models.IntegerField(default=60000)
 
     class Meta:
         unique_together = ('question_order', 'survey_question_order', 'consent_form', 'check_answers')
