@@ -158,6 +158,7 @@ class Experiment(models.Model):
     instructions = models.TextField(blank=False)
     farewell_message = models.TextField(default="Thank you for participating in this experiment.")
     check_answers = models.BooleanField(default=True)
+    random_questions = models.BooleanField(default=True)
     hint_timeout = models.IntegerField(default=60000)
 
     class Meta:

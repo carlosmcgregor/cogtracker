@@ -91,10 +91,15 @@ class Command(BaseCommand):
             question_order = json.loads(row['Question Order'])
             survey_question_order = json.loads(row['Survey Question Order'])
             check_answers = False
+            random_questions = False
             if row['Check Answers'].startswith('T'):
                 check_answers = True
+            if row['Random Questions'].startswith('T'):
+                random_questions = True
+
             if Experiment.objects.filter(question_order=question_order, survey_question_order=survey_question_order,
-                                         consent_form=row['Consent Form'], check_answers=check_answers).count() != 0:
+                                         consent_form=row['Consent Form'], check_answers=check_answers,
+                                         random_questions=random_questions).count() != 0:
                 continue
 
             experiment = Experiment()
@@ -104,6 +109,8 @@ class Command(BaseCommand):
             experiment.instructions = row['Instructions']
             experiment.hint_timeout = int(row['Hint Timeout'])
             experiment.farewell_message = row['Farewell Message']
+            experiment.check_answers = check_answers
+            experiment.random_questions = random_questions
             try:
                 experiment.save()
             except IntegrityError:

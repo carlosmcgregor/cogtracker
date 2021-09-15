@@ -7,72 +7,111 @@
 {% endblock %}
 
 {% block content %}
+    <div class="static-right alert alert-success text-center" role="alert">{{ questions_remaining }} question(s)
+        remaining
+    </div>
+    <div id="messages"></div>
     {% if messages %}
         {% for message in messages %}
-            <div  {% if message.tags %} class="static alert alert-warning {{ message.tags }} " {% endif %}
-                                        role="alert" id="wrong-message"> {{ message }} </div>
+            <div  {% if message.tags %}
+                class="static alert alert-danger col-lg-3 text-center {{ message.tags }} " {% endif %}
+                role="alert" id="wrong-message"> {{ message }} </div>
         {% endfor %}
     {% endif %}
-    <div id="question">
-        <div class="container">
-            <br/>
-            {% autoescape off %}
-                {{ pre_text }}
-            {% endautoescape %}
-        </div>
-        <div class="container">
-            <br/>
-            <pre style="font-size: 1.1em">{{ code }}</pre>
-        </div>
-        <div class="container">
-            <br/>
-            {% autoescape off %}
-                {{ post_text }}
-            {% endautoescape %}
-        </div>
-        <div class="container">
-            <div class="row align-items-end">
-                <div class="col-lg-6">
-                    <form class="w-100" action="../q/{{ question_id }}" method="post" id="answer-box">
-                        {% crispy form %}
-                    </form>
+    <div class="container-fluid" id="question">
+        <div class="row p-2 align-items-center" style="height: 90vh;overflow: auto;">
+            <div class="col-lg-6">
+                <div class="row">
+                    <div class="col-lg-12">
+                        <br/>
+                        {% autoescape off %}
+                            {{ pre_text }}
+                        {% endautoescape %}
+                        <br/>
+                        <pre style="font-size: 1.1em">{{ code }}</pre>
+                        <br/>
+                        {% autoescape off %}
+                            {{ post_text }}
+                        {% endautoescape %}
+                        <form class="w-100" action="" method="post" id="answer-box">
+                            {% crispy form %}
+                        </form>
+                    </div>
                 </div>
-                <div class="col-lg-6" id="hints">
-                    <button type="button" class="btn btn-danger" onclick="giveHint()">Hint</button>
+                <div class="row">
+                    <div class="col-lg-3" id="timers">
+                        <br/>
+                        <div id='hint-timer' class='alert alert-warning text-center' role='alert'
+                             style="visibility: hidden">
+                            Hint time remaining
+                        </div>
+                    </div>
                 </div>
+            </div>
+            <div class="col-lg-6" id="hints" style="font-size: 0.85rem">
+                <button type="button" class="btn btn-danger" onclick="giveHint()">Hint</button>
             </div>
         </div>
     </div>
-    {#    <div id="instructions" style="display: {{ instructions_display }};">#}
-    {#        <div class="container">#}
-    {#            {% autoescape off %}#}
-    {#                {{ instructions }}#}
-    {#            {% endautoescape %}#}
-    {#            <a href="/q/{{ next_question }}" class="btn btn-primary" role="button">Next</a>#}
-    {#        </div>#}
-    {#    </div>#}
     <script>
       var hints = {{ hints | safe }};
+      var hintSizes = {
+        "1": "15",
+        "2": "40",
+        "3": "15"
+      };
+      var hintNumber = hints.length
 
-      $(document).ready(function () {
-        $("#wrong-message").fadeTo(2000, 500).slideUp(500, function () {
-          $("#wrong-message").slideUp(500);
+      // Manage JSON messages
+      $('#answer-box').submit(function (e) {
+        $.post('../q/{{ question_id }}', $(this).serialize(), function (data) {
+          $("nav").after(
+            $('<div></div>')
+              .attr(
+                {
+                  id: 'wrong-message',
+                  "class": 'static alert alert-danger col-lg-3 text-center ',
+                  "role": 'alert'
+                  {#"style": "height: " + hintSizes[curIndex] + "vh;overflow: auto;"#}
+                }
+              )
+              .text(JSON.parse(data).message)
+          );
+          $("#wrong-message").fadeTo(2000, 500).slideUp(500, function () {
+            $("#wrong-message").slideUp(500);
+            $("#wrong-message").remove();
+          });
         });
+        e.preventDefault();
       });
 
-      function giveHint() {
-        // Create hint object and attach it to correct div
-        var hint = hints.shift();
-        if (hint) {
+      // Create the static divs for the hints
+      function createHintDivs() {
+        for (const x of Array(hintNumber).keys()) {
+          var curIndex = hintNumber - x;
           $("#hints").prepend(
             $('<div></div>')
               .attr(
                 {
-                  id: 'hint',
+                  id: 'hint' + curIndex,
                   "class": 'alert alert-warning',
-                  "role": 'alert'
-                })
-              .text(hint));
+                  "role": 'alert',
+                  "style": "height: " + hintSizes[curIndex] + "vh;overflow: auto;"
+                }
+              )
+              .append(
+                $('<h6></h6>')
+                  .text("Hint #" + curIndex))
+          );
+        }
+      }
+
+      function giveHint() {
+        // Create hint object and attach it to correct div
+        var hint = hints.shift();
+        var curHintNumber = hintNumber - hints.length;
+        if (hint) {
+          $("#hint" + curHintNumber).append(hint);
 
           // Set timer interval
           var yourDateToGo = new Date(); //here you're making new Date object
@@ -82,27 +121,14 @@
 
           // Disable for the specified amount of time
           if ({{ hint_timeout }}) {
-            $("#hints").prepend(
-              $('<div></div>')
-                .attr(
-                  {
-                    id: 'hint-timer',
-                    "class": 'alert alert-warning',
-                    "role": 'alert'
-                  }
-                )
-                .text("Hint time remaining")
-            );
+            $("#hint-timer")
+              .css({"visibility": "visible"})
+              .text("Hint time remaining");
 
             var timing = setInterval( // you're making an interval - a thing, that is updating content after number of miliseconds, that you're writing after comma as second parameter
               function () {
                 var currentDate = new Date().getTime(); //same thing as above
                 var timeLeft = yourDateToGo - currentDate; //difference between time you set and now in miliseconds
-
-                {#var days = Math.floor(timeLeft / (1000 * 60 * 60 * 24)); //conversion miliseconds on days#}
-                {#if (days < 10) days = "0" + days; //if number of days is below 10, programm is writing "0" before 9, that's why you see "09" instead of "9"#}
-                {#var hours = Math.floor((timeLeft % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60)); //conversion miliseconds on hours#}
-                {#if (hours < 10) hours = "0" + hours;#}
                 var minutes = Math.floor((timeLeft % (1000 * 60 * 60)) / (1000 * 60)); //conversion miliseconds on minutes
                 if (minutes < 10) minutes = "0" + minutes;
                 var seconds = Math.floor((timeLeft % (1000 * 60)) / 1000);//conversion miliseconds on seconds
@@ -120,19 +146,33 @@
 
             $("#answer-box :input").attr("disabled", true);
             $("#hints :input").attr("disabled", true);
-            $("#hint").fadeTo({{ hint_timeout }}, 500).slideUp(500, function () {
-              $("#hint").slideUp(500);
-              $("#answer-box :input").attr("disabled", false);
-              $("#hints :input").attr("disabled", false);
-              $("#hint-timer").remove();
-            });
+
+            setTimeout(function () {
+                $("#answer-box :input").attr("disabled", false);
+                $("#hints :input").attr("disabled", false);
+                $("#hint-timer").css({"visibility": "hidden"});
+                if (hints.length === 0) {
+                  $("#hints :input").attr("disabled", true);
+                }
+              }
+              , {{ hint_timeout }});
+
+            {#$("#hint").fadeTo({{ hint_timeout }}, 500).slideUp(500, function () {#}
+            {#  $("#hint").slideUp(500);#}
+            {#  $("#answer-box :input").attr("disabled", false);#}
+            {#  $("#hints :input").attr("disabled", false);#}
+            {#  $("#hint-timer").remove();#}
           }
         }
 
-        if (hints.length === 0){
-          $("#hints :input").attr("disabled", true);
-        }
       }
+
+      $(document).ready(function () {
+        $("#wrong-message").fadeTo(2000, 500).slideUp(500, function () {
+          $("#wrong-message").slideUp(500);
+        });
+        createHintDivs();
+      });
 
     </script>
 {% endblock %}
