@@ -24,16 +24,29 @@ def replace_linebreaks(text, double=True):
 
 
 def markdown(text, double=None, *args, **kwargs):
+    print("Original text:")
+    print(text)
     if double is None:
         double = False
         if text.find("```") != -1:
             print("Using double lines")
             double = True
 
-    return markdown2.markdown(replace_linebreaks(text, double=double),
-                              extras=['fenced-code-blocks'],
-                              *args,
-                              **kwargs).replace("code>", "pre>")
+    change_code_tags = '<code>' not in text
+
+    print("Text without linebreaks:")
+    text = replace_linebreaks(text, double=double)
+    print(text)
+
+    markdown_text = markdown2.markdown(text,
+                                       extras=['fenced-code-blocks'],
+                                       *args,
+                                       **kwargs)
+
+    if change_code_tags:
+        markdown_text = markdown_text.replace("code>", "pre>")
+
+    return markdown_text
 
 
 def randomize_list(l):
@@ -126,7 +139,7 @@ def question(request, question_id):
     question_index = questions.index(str(question_id))
     print("Question count: {}".format(question_index + 1))
     questions_remaining = len(questions[question_index:]) - 1
-    hint_timeout = request.session.get('hint_timeout') or 60000
+    hint_timeout = request.session.get('hint_timeout') or 5000
     check_answers = request.session.get('check_answers') if request.session.get('check_answers') is not None else True
 
     try:
