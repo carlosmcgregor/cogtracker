@@ -60,7 +60,7 @@
         "2": "40",
         "3": "15"
       };
-      var hintNumber = hints.length
+      var hintNumber = hints.length;
 
       // Manage JSON messages
       $('#answer-box').submit(function (e) {
@@ -121,34 +121,43 @@
 
           // Disable for the specified amount of time
           if ({{ hint_timeout }}) {
-            $("#hint-timer")
-              .css({"visibility": "visible"})
-              .text("Hint time remaining");
 
-            var timing = setInterval( // you're making an interval - a thing, that is updating content after number of miliseconds, that you're writing after comma as second parameter
-              function () {
-                var currentDate = new Date().getTime(); //same thing as above
-                var timeLeft = yourDateToGo - currentDate; //difference between time you set and now in miliseconds
-                var minutes = Math.floor((timeLeft % (1000 * 60 * 60)) / (1000 * 60)); //conversion miliseconds on minutes
-                if (minutes < 10) minutes = "0" + minutes;
-                var seconds = Math.floor((timeLeft % (1000 * 60)) / 1000);//conversion miliseconds on seconds
-                if (seconds < 10) seconds = "0" + seconds;
+            // Display timer only for last question
+            if (curHintNumber === hintNumber) {
+              $("#hint-timer")
+                .css({"visibility": "visible"})
+                .text("Please wait");
 
-                document.getElementById("hint-timer").innerHTML = minutes + "m " + seconds + "s"; // putting number of days, hours, minutes and seconds in div,
-                //which id is countdown
+              var timing = setInterval( // you're making an interval - a thing, that is updating content after number of miliseconds, that you're writing after comma as second parameter
+                function () {
+                  var currentDate = new Date().getTime(); //same thing as above
+                  var timeLeft = yourDateToGo - currentDate; //difference between time you set and now in miliseconds
+                  var minutes = Math.floor((timeLeft % (1000 * 60 * 60)) / (1000 * 60)); //conversion miliseconds on minutes
+                  if (minutes < 10) minutes = "0" + minutes;
+                  var seconds = Math.floor((timeLeft % (1000 * 60)) / 1000);//conversion miliseconds on seconds
+                  if (seconds < 10) seconds = "0" + seconds;
 
-                if (timeLeft <= 0) {
-                  clearInterval(timing);
-                  document.getElementById("hint-timer").innerHTML = "Time's out"; //if there's no time left, programm in this 2 lines is clearing interval (nothing is counting now)
-                  //and you see "It's over" instead of time left
-                }
-              }, 1000);
+                  document.getElementById("hint-timer").innerHTML = minutes + "m " + seconds + "s"; // putting number of days, hours, minutes and seconds in div,
+                  //which id is countdown
 
-            $("#answer-box :input").attr("disabled", true);
+                  if (timeLeft <= 0) {
+                    clearInterval(timing);
+                    document.getElementById("hint-timer").innerHTML = "Time's out"; //if there's no time left, programm in this 2 lines is clearing interval (nothing is counting now)
+                    //and you see "It's over" instead of time left
+                  }
+                }, 1000);
+            }
+
+            if (curHintNumber === hintNumber){
+              $("#answer-box :input").attr("disabled", true);
+            }
+
             $("#hints :input").attr("disabled", true);
 
             setTimeout(function () {
-                $("#answer-box :input").attr("disabled", false);
+                if (curHintNumber === hintNumber){
+                  $("#answer-box :input").attr("disabled", false);
+                }
                 $("#hints :input").attr("disabled", false);
                 $("#hint-timer").css({"visibility": "hidden"});
                 if (hints.length === 0) {
