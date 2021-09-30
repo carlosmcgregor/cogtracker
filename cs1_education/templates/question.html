@@ -7,7 +7,7 @@
 {% endblock %}
 
 {% block content %}
-    <div class="static-right alert alert-success text-center" role="alert">{{ questions_remaining }} question(s)
+    <div class="static-right alert alert-primary text-center" role="alert">{{ questions_remaining }} question(s)
         remaining
     </div>
     <div id="messages"></div>
@@ -65,22 +65,44 @@
       // Manage JSON messages
       $('#answer-box').submit(function (e) {
         $.post('../q/{{ question_id }}', $(this).serialize(), function (data) {
-          $("nav").after(
-            $('<div></div>')
-              .attr(
-                {
-                  id: 'wrong-message',
-                  "class": 'static alert alert-danger col-lg-3 text-center ',
-                  "role": 'alert'
-                  {#"style": "height: " + hintSizes[curIndex] + "vh;overflow: auto;"#}
-                }
-              )
-              .text(JSON.parse(data).message)
-          );
-          $("#wrong-message").fadeTo(2000, 500).slideUp(500, function () {
-            $("#wrong-message").slideUp(500);
-            $("#wrong-message").remove();
-          });
+          var message = JSON.parse(data).message;
+          var success = JSON.parse(data).success;
+          if (success){
+            $("nav").after(
+              $('<div></div>')
+                .attr(
+                  {
+                    id: 'wrong-message',
+                    "class": 'static alert alert-success col-lg-3 text-center ',
+                    "role": 'alert'
+                    {#"style": "height: " + hintSizes[curIndex] + "vh;overflow: auto;"#}
+                  }
+                )
+                .text(message)
+            );
+            $("#wrong-message").fadeTo(2000, 500).slideUp(500, function () {
+              $("#wrong-message").slideUp(500);
+              $("#wrong-message").remove();
+              window.location.href = '../s/';
+            });
+          } else {
+            $("nav").after(
+              $('<div></div>')
+                .attr(
+                  {
+                    id: 'wrong-message',
+                    "class": 'static alert alert-danger col-lg-3 text-center ',
+                    "role": 'alert'
+                    {#"style": "height: " + hintSizes[curIndex] + "vh;overflow: auto;"#}
+                  }
+                )
+                .text(message)
+            );
+            $("#wrong-message").fadeTo(2000, 500).slideUp(500, function () {
+              $("#wrong-message").slideUp(500);
+              $("#wrong-message").remove();
+            });
+          }
         });
         e.preventDefault();
       });

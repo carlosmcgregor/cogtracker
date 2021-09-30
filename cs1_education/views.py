@@ -163,10 +163,10 @@ def question(request, question_id):
                 if not matches:
                     print("Adding message to request")
                     # messages.info(request, 'Wrong answer!')
-                    message = "Wrong answer!"
-                    return HttpResponse(json.dumps({'message': message}))
+                    return HttpResponse(json.dumps({'message': "Wrong answer!", 'success': False}))
                 else:
-                    return redirect('../s/')
+                    return HttpResponse(json.dumps({'message': "Correct!", 'success': True}))
+                    # return redirect('../s/')
             else:
                 print("Form is invalid!")
     else:
