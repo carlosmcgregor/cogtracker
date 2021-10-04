@@ -19,14 +19,77 @@
 {% block content %}
 {% endblock %}
 </body>
-{#<script>#}
-{#$( "body" ).mousemove(function( event ) {#}
-{#  var pageCoords = "( " + event.pageX + ", " + event.pageY + " )";#}
-{#  var clientCoords = "( " + event.clientX + ", " + event.clientY + " )";#}
-{#  console.log("Page coords:" + pageCoords);#}
-{#  console.log("Client coords:" + clientCoords);#}
-  {#$( "span" ).first().text( "( event.pageX, event.pageY ) : " + pageCoords );#}
-  {#$( "span" ).last().text( "( event.clientX, event.clientY ) : " + clientCoords );#}
-{#\});#}
-{#</script>#}
+<script>
+$( "body" ).mousemove(function( event ) {
+  var now = Date.now();
+  var pageCoords = event.pageX + "," + event.pageY;
+  var clientCoords = event.clientX + "," + event.clientY;
+  localStorage.setItem("coor:" + now.toString(), pageCoords + "," + clientCoords);
+  console.log("move: " + pageCoords + "," + clientCoords);
+});
+
+$(document).on('mousedown', function (event) {
+  var now = Date.now();
+  localStorage.setItem("click:" + now.toString(), event.target + "," + event);
+  console.log("mousedown: " + event.target + "," + event);
+  // Post the event object here.
+});
+
+$(document).on('mouseup', function (event) {
+  var now = Date.now();
+  localStorage.setItem("click:" + now.toString(), event.target + "," + event);
+  console.log("mouseup:" + event.target + "," + event);
+  // Post the event object here.
+});
+
+$(document).on('keydown', function (event) {
+  var now = Date.now();
+  localStorage.setItem("click:" + now.toString(), event.key + "," + event.target + "," + event);
+  console.log("keydown: " + event.key + "," + event.target + "," + event);
+  // Post the event object here.
+});
+
+$(document).on('keyup', function (event) {
+  var now = Date.now();
+  localStorage.setItem("click:" + now.toString(), event.key + "," + event.target + "," + event);
+  console.log("keyup: " + event.key + "," + event.target + "," + event);
+  // Post the event object here.
+});
+
+window.onbeforeunload = function(event) {
+  var activityDict = {};
+
+  for (let i = 0; i < localStorage.length; i++) {
+    var key = localStorage.key(i);
+    var curValue = activityDict[key];
+
+    if (curValue == null){
+        activityDict[key] = {
+          "mouse_x_page": null,
+          "mouse_y_page": null,
+          "mouse_x_client": null,
+          "mouse_y_client": null,
+          "mouse_click": null,
+          "mouse_click_target": null,
+          "mouse_click_event": null,
+          "keyboard_press": null,
+          "keyboard_press_target": null,
+          "keyboard_press_event": null
+        };
+    }
+    let storedValue = localStorage.getItem(localStorage.key(i));
+    console.log(`Item at ${i}: ${storedValue}`);
+  }
+    {#var s = "You have unsaved changes. Really leave?";#}
+    {##}
+    {#event = event || window.event;#}
+    {#if (event) {#}
+    {#    // This is for IE#}
+    {#    event.returnValue = s;#}
+    {#\}#}
+    {##}
+    {#// This is for all other browsers#}
+    {#return s;#}
+}
+</script>
 </html>

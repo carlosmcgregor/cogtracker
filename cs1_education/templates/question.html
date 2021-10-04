@@ -1,9 +1,12 @@
 {% extends "base.html" %}
 
 {% load crispy_forms_tags %}
+{% load static %}
 
 {% block head %}
     <title>Question {{ question_count }}</title>
+    <script src="{% static 'js/codemirror.js' %}" type="text/javascript"></script>
+    <link href="{% static 'css/codemirror.css' %}" rel="stylesheet">
 {% endblock %}
 
 {% block content %}
@@ -27,9 +30,8 @@
                         {% autoescape off %}
                             {{ pre_text }}
                         {% endautoescape %}
-                        <br/>
-                        <pre style="font-size: 1.1em">{{ code }}</pre>
-                        <br/>
+                        <div id="code-box"></div>
+                        {#                        <pre style="font-size: 1.1em">{{ code }}</pre>#}
                         {% autoescape off %}
                             {{ post_text }}
                         {% endautoescape %}
@@ -61,6 +63,16 @@
         "3": "15"
       };
       var hintNumber = hints.length;
+
+      // Create CodeMirror element
+      var cm = CodeMirror(document.getElementById("code-box"), {
+        value: `{{ code }}`,
+        mode: "text",
+        indentUnit: 4,
+        readOnly: true,
+        lineWrapping: true,
+        lineNumbers: true
+      });
 
       // Manage JSON messages
       $('#answer-box').submit(function (e) {
