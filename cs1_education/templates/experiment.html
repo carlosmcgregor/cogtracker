@@ -10,13 +10,12 @@
     <div id="consent-form" style="display: {{ consent_form_display }};">
         <div class="container">
             <br/>
-{#            <h3>Consent Form</h3>#}
             {% autoescape off %}
                 {{ consent_form }}
             {% endautoescape %}
         </div>
         <div class="container">
-            <form class="w-50" action="." method="post">
+            <form class="w-50" action="?" method="post">
                 {% crispy form %}
             </form>
         </div>

@@ -40,18 +40,16 @@
                         </form>
                     </div>
                 </div>
-                <div class="row">
-                    <div class="col-lg-3" id="timers">
-                        <br/>
-                        <div id='hint-timer' class='alert alert-warning text-center' role='alert'
-                             style="visibility: hidden">
-                            Hint time remaining
-                        </div>
-                    </div>
-                </div>
             </div>
             <div class="col-lg-6" id="hints" style="font-size: 0.85rem">
                 <button type="button" class="btn btn-danger" onclick="giveHint()">Hint</button>
+                <div id="timers">
+                    <br/>
+                    <div id='hint-timer' class='alert alert-warning text-center' role='alert'
+                         style="visibility: hidden">
+                        Hint time remaining
+                    </div>
+                </div>
             </div>
         </div>
     </div>
@@ -66,7 +64,7 @@
 
       // Create CodeMirror element
       var cm = CodeMirror(document.getElementById("code-box"), {
-        value: `{{ code }}`,
+        value: `{% autoescape off %}{{ code }}{% endautoescape %}`,
         mode: "text",
         indentUnit: 4,
         readOnly: true,

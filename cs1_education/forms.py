@@ -26,7 +26,7 @@ class ParticipantForm(forms.Form):
 
 
 class QuestionForm(forms.Form):
-    answer =  forms.CharField(widget=forms.Textarea(attrs={"rows": 5, "cols": 60}), label="")
+    answer =  forms.CharField(widget=forms.Textarea(attrs={"rows": 3, "cols": 60}), label="")
                               # label='Please write your answer below and click "Next" when done:')
     helper = FormHelper()
     helper.layout = Layout(

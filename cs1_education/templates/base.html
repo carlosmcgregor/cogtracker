@@ -20,51 +20,69 @@
 {% endblock %}
 </body>
 <script>
-$( "body" ).mousemove(function( event ) {
-  var now = Date.now();
-  var pageCoords = event.pageX + "," + event.pageY;
-  var clientCoords = event.clientX + "," + event.clientY;
-  localStorage.setItem("coor:" + now.toString(), pageCoords + "," + clientCoords);
-  console.log("move: " + pageCoords + "," + clientCoords);
-});
+  // For dict iteration
+  'use strict';
 
-$(document).on('mousedown', function (event) {
-  var now = Date.now();
-  localStorage.setItem("click:" + now.toString(), event.target + "," + event);
-  console.log("mousedown: " + event.target + "," + event);
-  // Post the event object here.
-});
+  window.post = function(url, data) {
+    return fetch(url, {method: "POST", headers: {'Content-Type': 'application/json'}, body: JSON.stringify(data)});
+  }
 
-$(document).on('mouseup', function (event) {
-  var now = Date.now();
-  localStorage.setItem("click:" + now.toString(), event.target + "," + event);
-  console.log("mouseup:" + event.target + "," + event);
-  // Post the event object here.
-});
+  function getCookie(name) {
+    const value = `; ${document.cookie}`;
+    const parts = value.split(`; ${name}=`);
+    if (parts.length === 2) return parts.pop().split(';').shift();
+  }
 
-$(document).on('keydown', function (event) {
-  var now = Date.now();
-  localStorage.setItem("click:" + now.toString(), event.key + "," + event.target + "," + event);
-  console.log("keydown: " + event.key + "," + event.target + "," + event);
-  // Post the event object here.
-});
+  $("body").mousemove(function (event) {
+    var now = Date.now();
+    var pageCoords = event.pageX + "," + event.pageY;
+    var clientCoords = event.clientX + "," + event.clientY;
+    localStorage.setItem("coor:" + now.toString(), pageCoords + "," + clientCoords);
+    {#console.log("move: " + pageCoords + "," + clientCoords);#}
+  });
 
-$(document).on('keyup', function (event) {
-  var now = Date.now();
-  localStorage.setItem("click:" + now.toString(), event.key + "," + event.target + "," + event);
-  console.log("keyup: " + event.key + "," + event.target + "," + event);
-  // Post the event object here.
-});
+  $(document).on('mousedown', function (event) {
+    var now = Date.now();
+    localStorage.setItem("click:" + now.toString(), "mousedown," + event.target + "," + event);
+    {#console.log("mousedown: " + event.target + "," + event);#}
+    // Post the event object here.
+  });
 
-window.onbeforeunload = function(event) {
-  var activityDict = {};
+  $(document).on('mouseup', function (event) {
+    var now = Date.now();
+    localStorage.setItem("click:" + now.toString(), "mouseup," + event.target + "," + event);
+    {#console.log("mouseup:" + event.target + "," + event);#}
+    // Post the event object here.
+  });
 
-  for (let i = 0; i < localStorage.length; i++) {
-    var key = localStorage.key(i);
-    var curValue = activityDict[key];
+  $(document).on('keydown', function (event) {
+    var now = Date.now();
+    localStorage.setItem("key:" + now.toString(), event.key + "," + event.target + "," + event);
+    {#console.log("keydown: " + event.key + "," + event.target + "," + event);#}
+    // Post the event object here.
+  });
 
-    if (curValue == null){
-        activityDict[key] = {
+  $(document).on('keyup', function (event) {
+    var now = Date.now();
+    localStorage.setItem("key:" + now.toString(), event.key + "," + event.target + "," + event);
+    {#console.log("keyup: " + event.key + "," + event.target + "," + event);#}
+    // Post the event object here.
+  });
+
+  window.onbeforeunload = function (event) {
+    var timestampDict = {};
+
+    for (let i = 0; i < localStorage.length; i++) {
+      var key = localStorage.key(i);
+      var value = localStorage.getItem(key);
+      var regType = /\w+:/g;
+      var regTimestamp = /:\w+/g;
+      var keyType = key.match(regType)[0].slice(0, -1);
+      var keyTimestamp = key.match(regTimestamp)[0].slice(1);
+      var actValue = timestampDict[keyTimestamp];
+
+      if (actValue == null) {
+        actValue = {
           "mouse_x_page": null,
           "mouse_y_page": null,
           "mouse_x_client": null,
@@ -76,20 +94,64 @@ window.onbeforeunload = function(event) {
           "keyboard_press_target": null,
           "keyboard_press_event": null
         };
+      }
+
+      switch (keyType) {
+        case "coor":
+          var coors = value.split(',');
+          actValue["mouse_x_page"] = coors[0];
+          actValue["mouse_y_page"] = coors[1];
+          actValue["mouse_x_client"] = coors[2];
+          actValue["mouse_y_client"] = coors[3];
+          break;
+        case "click":
+          var click = value.split(',');
+          actValue["mouse_click"] = click[0];
+          actValue["mouse_click_target"] = click[1];
+          actValue["mouse_click_event"] = click[2];
+          break;
+        case "key":
+          var keyPress = value.split(',');
+          actValue["key_press"] = keyPress[0];
+          actValue["key_press_target"] = keyPress[1];
+          actValue["key_press_event"] = keyPress[2];
+          break;
+        default:
+          console.log("Unable to process " + keyType + " {" + key + ":" + value + "}");
+      }
+
+      timestampDict[keyTimestamp] = actValue;
+
+      {#let storedValue = localStorage.getItem(localStorage.key(i));#}
+      {#console.log(`Item at ${i}: ${storedValue}`);#}
     }
-    let storedValue = localStorage.getItem(localStorage.key(i));
-    console.log(`Item at ${i}: ${storedValue}`);
+
+    let timestamps = [];
+
+    for (let [key, value] of Object.entries(timestampDict)) {
+      value["timestamp"] = key;
+      timestamps.push(value);
+    }
+
+    let activityDict = {};
+    activityDict["session_key"] = "{{ session_key }}";
+    activityDict["url"] = window.location.href;
+    activityDict["activity"] = timestamps;
+
+    // Send activity
+    var xhr = new XMLHttpRequest();
+    var url = "../a/";
+    xhr.open("POST", url, true);
+    xhr.setRequestHeader("Content-Type", "application/json");
+    var data = JSON.stringify(activityDict);
+    console.log("Sending:" + data);
+    xhr.send(data);
+    {#post("../a/", activityDict);#}
+    {#xhr.onreadystatechange = function () {#}
+    {#  if (xhr.readyState === 4 && xhr.status === 200) {#}
+    {#    var json = JSON.parse(xhr.responseText);#}
+    {#    console.log(json.email + ", " + json.password);#}
+    {#  }#}
   }
-    {#var s = "You have unsaved changes. Really leave?";#}
-    {##}
-    {#event = event || window.event;#}
-    {#if (event) {#}
-    {#    // This is for IE#}
-    {#    event.returnValue = s;#}
-    {#\}#}
-    {##}
-    {#// This is for all other browsers#}
-    {#return s;#}
-}
 </script>
 </html>

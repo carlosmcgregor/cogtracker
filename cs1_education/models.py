@@ -179,10 +179,20 @@ class Participant(models.Model):
 
     # Interactions come in the form of a list of dicts
     # e.g. [{"page": "question1", "timestamp": "2021-04-01 15:00", "mouse_x": "25", "mouse_y": "400", "key_press": "k"}]
-    interaction = models.JSONField(default=list)
+    # interaction = models.JSONField(default=list)
 
-    consent = models.CharField(max_length=200, blank=False, default=str)
+    session_key = models.CharField(max_length=200, blank=False)
+    consent = models.CharField(max_length=1000, blank=False, default=str)
     consent_timestamp = models.TimeField(auto_now_add=True)
 
     def __str__(self):
-        return self.participant_code
+        return self.code
+
+    class Meta:
+        unique_together = ('code', 'name', 'session_key', 'experiment_id')
+
+
+class ParticipantActivity(models.Model):
+    session_key = models.CharField(max_length=200, blank=False)
+    url = models.CharField(max_length=200, blank=False)
+    activity = models.JSONField(default=list)
