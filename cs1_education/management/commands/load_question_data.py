@@ -77,8 +77,9 @@ class Command(BaseCommand):
                 continue
             survey_question = SurveyQuestion()
             survey_question.text = row['Text']
-            survey_question.scale = json.loads(row['Scale'])
-            survey_question.scale_label = json.loads(row['Scale Label'])
+            survey_question.survey_type = row['Survey Type']
+            survey_question.customization_number = int(row['Customization Number'])
+            survey_question.scale_labels = json.loads(row['Scale Labels'])
             try:
                 survey_question.save()
             except IntegrityError:
@@ -90,6 +91,7 @@ class Command(BaseCommand):
                 continue
             question_order = json.loads(row['Question Order'])
             survey_question_order = json.loads(row['Survey Question Order'])
+            preliminary_survey_question_order = json.loads(row['Preliminary Survey Question Order'])
             check_answers = False
             random_questions = False
             if row['Check Answers'].startswith('T'):
@@ -105,6 +107,7 @@ class Command(BaseCommand):
             experiment = Experiment()
             experiment.question_order = question_order
             experiment.survey_question_order = survey_question_order
+            experiment.preliminary_survey_question_order = preliminary_survey_question_order
             experiment.consent_form = row['Consent Form']
             experiment.instructions = row['Instructions']
             experiment.hint_timeout = int(row['Hint Timeout'])

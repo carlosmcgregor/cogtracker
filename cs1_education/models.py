@@ -127,33 +127,90 @@ class Question(models.Model):
 
 class SurveyQuestion(models.Model):
     text = models.CharField(max_length=200, blank=False, unique=True)
-    scale = models.IntegerField(default=0)
-    scale_label = models.JSONField(validators=[validate_position_dict], default=dict)
+    customization_number = models.IntegerField(default=0)
+    scale_labels = models.JSONField(validators=[validate_position_dict], default=dict)
+    survey_type = models.CharField(max_length=30)
 
     @property
     def label_text(self):
+        return self.create_label(self.text)
+
+    @staticmethod
+    def create_label(text):
         pattern = re.compile('[\W_]+')
-        text = pattern.sub(' ', self.text)
+        text = pattern.sub(' ', text)
         split_text = text.lower().split(' ')
-        return '_'.join(split_text[:2] if len(split_text) >= 2 else split_text)
+        return '_'.join(split_text[:4] if len(split_text) >= 4 else split_text)
+
+    @property
+    def scale_keys(self):
+        return sorted(list(self.scale_labels.keys()))
+
+    @property
+    def scale_values(self):
+        return [self.scale_labels[key] for key in self.scale_keys if key != "Other"]
+
+    @property
+    def first_element_key(self):
+        return self.scale_keys[0]
+
+    @property
+    def first_element_key_as_int(self):
+        try:
+            return int(self.first_element_key)
+        except ValueError:
+            return self.first_element_key
 
     @property
     def first_element(self):
-        return self.scale_label[str(0)]
+        return self.scale_labels[self.first_element_key]
+
+    @property
+    def last_element_key(self):
+        return self.scale_keys[-1]
+
+    @property
+    def last_element_key_as_int(self):
+        try:
+            return int(self.last_element_key)
+        except ValueError:
+            return self.last_element_key
 
     @property
     def last_element(self):
-        return self.scale_label[str(self.scale_index)]
+        return self.scale_labels[self.last_element_key]
+
 
     @property
-    def scale_index(self):
-        return int(self.scale) - 1
+    def matrix_columns(self):
+        if self.survey_type != "matrix":
+            return [{}]
+
+        return [{"value": int(key), "text": value} for key, value in self.scale_labels["columns"].items()]
+
+    @property
+    def matrix_rows(self):
+        if self.survey_type != "matrix":
+            return [{}]
+
+        sorted_keys = sorted(self.scale_labels.keys())
+        sorted_keys.remove("columns")
+
+        return [
+            {"value": self.create_label(self.scale_labels[key]), "text": self.scale_labels[key]}
+            for key in sorted_keys
+        ]
+
+    @property
+    def has_other(self):
+        return self.scale_labels.get("Other") is not None
 
 
 class Experiment(models.Model):
     # questions = models.ManyToManyField(Question)
     question_order = models.JSONField(validators=[validate_question_order], default=list)
     survey_question_order = models.JSONField(validators=[validate_survey_question_order], default=list)
+    preliminary_survey_question_order = models.JSONField(validators=[validate_survey_question_order], default=list)
     consent_form = models.TextField(blank=False)
     instructions = models.TextField(blank=False)
     farewell_message = models.TextField(default="Thank you for participating in this experiment.")

@@ -37,20 +37,27 @@
                   questions:
                     [
                       {% for survey in page %}
-                        {% if survey.scale == 0 %}
+                        {% if survey.survey_type == "text" %}
                           {
                             type: "text",
                             name: "{{ survey.text }}",
                             title: "{{ survey.text }}"
                           },
-                        {% else %}
+                        {% elif survey.survey_type == "comment" %}
+                          {
+                            type: "comment",
+                            name: "{{ survey.text }}",
+                            title: "{{ survey.text }}",
+                            rows: "{{ survey.customization_number }}"
+                          },
+                        {% elif survey.survey_type == "rating" %}
                           {
                             type: "rating",
                             name: "{{ survey.label_text }}",
                             title: "{{ survey.text }}",
                             isRequired: true,
-                            rateMin: 0,
-                            rateMax: {{ survey.scale_index }},
+                            rateMin: {% autoescape off %}{{ survey.first_element_key_as_int }}{% endautoescape %},
+                            rateMax: {% autoescape off %}{{ survey.last_element_key_as_int }}{% endautoescape %},
                             minRateDescription: "{{ survey.first_element }}",
                             maxRateDescription: "{{ survey.last_element }}"
                             {#type: "radiogroup",#}
@@ -61,6 +68,40 @@
                             {#    "{{ value }}",#}
                             {#  {% endfor %}#}
                             {#]#}
+                          },
+                        {% elif survey.survey_type == "checkbox" %}
+                          {
+                            type: "checkbox",
+                            name: "{{ survey.label_text }}",
+                            title: "{{ survey.text }}",
+                            isRequired: true,
+                            colCount: {% autoescape off %}{{ survey.customization_number }}{% endautoescape %},
+                            {% if survey.has_other == True %}
+                              hasOther: true,
+                              otherText: "Other",
+                            {% endif %}
+                            choices: {% autoescape off %}{{ survey.scale_values }}{% endautoescape %}
+                          },
+                        {% elif survey.survey_type == "radiogroup" %}
+                          {
+                            type: "radiogroup",
+                            name: "{{ survey.label_text }}",
+                            title: "{{ survey.text }}",
+                            isRequired: true,
+                            {% if survey.has_other == True %}
+                              hasOther: true,
+                              otherText: "Other",
+                            {% endif %}
+                            colCount: {% autoescape off %}{{ survey.customization_number }}{% endautoescape %},
+                            choices: {% autoescape off %}{{ survey.scale_values }}{% endautoescape %}
+                          },
+                        {% elif survey.survey_type == "matrix" %}
+                          {
+                            type: "matrix",
+                            name: "{{ survey.label_text }}",
+                            title: "{{ survey.text }}",
+                            columns: {% autoescape off %}{{ survey.matrix_columns }}{% endautoescape %},
+                            rows: {% autoescape off %}{{ survey.matrix_rows }}{% endautoescape %}
                           },
                         {% endif %}
                       {% endfor %}
@@ -193,7 +234,7 @@
                     function () {
                       window.location.href = "../q/{{ next_question }}";
                     }, 2000)
-              })
+                })
               });
 
           survey.completedHtml = "<div><b>Thank you for completing the question survey. Please wait.</b></div>"

@@ -116,10 +116,12 @@ def experiment(request, experiment_id):
 
     request.session['questions'] = questions
     request.session['survey_questions'] = experiment.survey_question_order
+    request.session['preliminary_survey_questions'] = experiment.preliminary_survey_question_order
     request.session['check_answers'] = experiment.check_answers
     request.session['hint_timeout'] = experiment.hint_timeout
     request.session['experiment_id'] = experiment_id
     request.session['on_question'] = False
+    request.session['next_question'] = next_question
     instructions = experiment.instructions
 
     if experiment.check_answers:
@@ -132,6 +134,35 @@ def experiment(request, experiment_id):
                    "consent_form_display": consent_form_display,
                    "instructions_display": instructions_display,
                    "next_question": next_question,
+                   "session_key": request.session.session_key})
+
+
+@csrf_exempt
+def preliminary_survey(request):
+    surveys = list()
+    request.session['on_question'] = False
+    print(request.session.get("preliminary_survey_questions"))
+
+    if request.method == 'POST':
+        print("Getting survey data")
+        cur_survey_answers = dict()
+        cur_survey_answers["question_id"] = -1
+        cur_survey_answers["timestamp"] = time.time()
+        cur_survey_answers["survey_answers"] = json.loads(request.body)
+
+        update_participant(request, survey_data=cur_survey_answers)
+
+        # return redirect('../q/' + str(request.session['next_question']))
+        return HttpResponse(status=202)
+
+    for i, page in enumerate(request.session.get('preliminary_survey_questions') or [[1, 2, 3, 4, 5]]):
+        surveys.append(list())
+        for survey_id in page:
+            surveys[i].append(SurveyQuestion.objects.get(id=survey_id))
+
+    return render(request, 'preliminary_survey.html',
+                  {"surveys": surveys,
+                   "next_question": request.session.get('next_question') or 0,
                    "session_key": request.session.session_key})
 
 
