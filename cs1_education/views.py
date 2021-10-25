@@ -160,8 +160,10 @@ def preliminary_survey(request):
         for survey_id in page:
             surveys[i].append(SurveyQuestion.objects.get(id=survey_id))
 
-    return render(request, 'preliminary_survey.html',
+    return render(request, 'survey.html',
                   {"surveys": surveys,
+                   "title": "Preliminary Survey",
+                   "wait_msg": "Thank you for completing the preliminary survey. Please wait.",
                    "next_question": request.session.get('next_question') or 0,
                    "session_key": request.session.session_key})
 
@@ -297,7 +299,9 @@ def survey(request):
 
     return render(request, 'survey.html',
                   {"surveys": surveys,
-                   "next_question": request.session['next_question'],
+                   "title": "Survey",
+                   "wait_msg": "Thank you for completing the question survey. Please wait.",
+                   "next_question": request.session.get('next_question') or 0,
                    "session_key": request.session.session_key})
 
 

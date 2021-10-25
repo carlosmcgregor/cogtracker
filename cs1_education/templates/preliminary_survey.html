@@ -2,7 +2,7 @@
 {% load static %}
 
 {% block head %}
-    <title>Survey</title>
+    <title>Preliminary Survey</title>
 
     <script src="{% static 'survey/survey.jquery.min.js' %}" type="text/javascript"></script>
     <link href="{% static 'survey/survey.min.css' %}" rel="stylesheet"/>
@@ -78,7 +78,7 @@
                             colCount: {% autoescape off %}{{ survey.customization_number }}{% endautoescape %},
                             {% if survey.has_other == True %}
                               hasOther: true,
-                              otherText: "Other",
+                              otherText: "{{ survey.other_label }}",
                             {% endif %}
                             choices: {% autoescape off %}{{ survey.scale_values }}{% endautoescape %}
                           },
@@ -90,7 +90,7 @@
                             isRequired: true,
                             {% if survey.has_other == True %}
                               hasOther: true,
-                              otherText: "Other",
+                              otherText: "{{ survey.other_label }}",
                             {% endif %}
                             colCount: {% autoescape off %}{{ survey.customization_number }}{% endautoescape %},
                             choices: {% autoescape off %}{{ survey.scale_values }}{% endautoescape %}
@@ -106,7 +106,7 @@
                         {% endif %}
                       {% endfor %}
                     ]
-                }
+                },
               {% endfor %}
             ]
           };

@@ -140,7 +140,7 @@ class SurveyQuestion(models.Model):
         pattern = re.compile('[\W_]+')
         text = pattern.sub(' ', text)
         split_text = text.lower().split(' ')
-        return '_'.join(split_text[:4] if len(split_text) >= 4 else split_text)
+        return '_'.join(split_text)
 
     @property
     def scale_keys(self):
@@ -204,6 +204,10 @@ class SurveyQuestion(models.Model):
     @property
     def has_other(self):
         return self.scale_labels.get("Other") is not None
+
+    @property
+    def other_label(self):
+        return self.scale_labels.get("Other") or "Other"
 
 
 class Experiment(models.Model):

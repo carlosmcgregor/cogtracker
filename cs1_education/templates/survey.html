@@ -8,7 +8,8 @@
     <link href="{% static 'survey/survey.min.css' %}" rel="stylesheet"/>
 
     <script src="{% static 'bootstrap_material_design/bootstrap-material-design.js' %}" type="text/javascript"></script>
-    <link href="{% static 'bootstrap_material_design/bootstrap-material-design.min.css' %}" rel="stylesheet"/>
+    <link href="{% static 'bootstrap_material_design/survey.modern.min.css' %}" rel="stylesheet"/>
+    <link href="{% static 'bootstrap_material_design/survey.css' %}" rel="stylesheet"/>
 
     <script>
       $(document).ready(function () {
@@ -23,12 +24,20 @@
         <div id="surveyElement" style="display:inline-block;width:100%;"></div>
         <div id="surveyResult"></div>
         <script>
+          var defaultThemeColors = Survey
+            .StylesManager
+            .ThemeColors["default"];
+          defaultThemeColors["$main-color"] = "#25355A";
+          defaultThemeColors["$main-hover-color"] = "#007FA3";
+          defaultThemeColors["$text-color"] = "#4a4a4a";
+          defaultThemeColors["$header-color"] = "#7ff07f";
 
-          Survey.defaultBootstrapMaterialCss.navigationButton = "btn btn-green";
-          Survey.defaultBootstrapMaterialCss.rating.item = "btn btn-default my-rating";
+          defaultThemeColors["$header-background-color"] = "#4a4a4a";
+          defaultThemeColors["$body-container-background-color"] = "#f8f8f8";
+
           Survey
             .StylesManager
-            .applyTheme("bootstrapmaterial");
+            .applyTheme();
 
           var json = {
             pages: [
@@ -37,20 +46,27 @@
                   questions:
                     [
                       {% for survey in page %}
-                        {% if survey.scale == 0 %}
+                        {% if survey.survey_type == "text" %}
                           {
                             type: "text",
                             name: "{{ survey.text }}",
                             title: "{{ survey.text }}"
                           },
-                        {% else %}
+                        {% elif survey.survey_type == "comment" %}
+                          {
+                            type: "comment",
+                            name: "{{ survey.text }}",
+                            title: "{{ survey.text }}",
+                            rows: "{{ survey.customization_number }}"
+                          },
+                        {% elif survey.survey_type == "rating" %}
                           {
                             type: "rating",
                             name: "{{ survey.label_text }}",
                             title: "{{ survey.text }}",
                             isRequired: true,
-                            rateMin: 0,
-                            rateMax: {{ survey.scale_index }},
+                            rateMin: {% autoescape off %}{{ survey.first_element_key_as_int }}{% endautoescape %},
+                            rateMax: {% autoescape off %}{{ survey.last_element_key_as_int }}{% endautoescape %},
                             minRateDescription: "{{ survey.first_element }}",
                             maxRateDescription: "{{ survey.last_element }}"
                             {#type: "radiogroup",#}
@@ -62,10 +78,44 @@
                             {#  {% endfor %}#}
                             {#]#}
                           },
+                        {% elif survey.survey_type == "checkbox" %}
+                          {
+                            type: "checkbox",
+                            name: "{{ survey.label_text }}",
+                            title: "{{ survey.text }}",
+                            isRequired: true,
+                            colCount: {% autoescape off %}{{ survey.customization_number }}{% endautoescape %},
+                            {% if survey.has_other == True %}
+                              hasOther: true,
+                              otherText: "{{ survey.other_label }}",
+                            {% endif %}
+                            choices: {% autoescape off %}{{ survey.scale_values }}{% endautoescape %}
+                          },
+                        {% elif survey.survey_type == "radiogroup" %}
+                          {
+                            type: "radiogroup",
+                            name: "{{ survey.label_text }}",
+                            title: "{{ survey.text }}",
+                            isRequired: true,
+                            {% if survey.has_other == True %}
+                              hasOther: true,
+                              otherText: "{{ survey.other_label }}",
+                            {% endif %}
+                            colCount: {% autoescape off %}{{ survey.customization_number }}{% endautoescape %},
+                            choices: {% autoescape off %}{{ survey.scale_values }}{% endautoescape %}
+                          },
+                        {% elif survey.survey_type == "matrix" %}
+                          {
+                            type: "matrix",
+                            name: "{{ survey.label_text }}",
+                            title: "{{ survey.text }}",
+                            columns: {% autoescape off %}{{ survey.matrix_columns }}{% endautoescape %},
+                            rows: {% autoescape off %}{{ survey.matrix_rows }}{% endautoescape %}
+                          },
                         {% endif %}
                       {% endfor %}
                     ]
-                }
+                },
               {% endfor %}
             ]
           };
@@ -193,10 +243,10 @@
                     function () {
                       window.location.href = "../q/{{ next_question }}";
                     }, 2000)
-              })
+                })
               });
 
-          survey.completedHtml = "<div><b>Thank you for completing the question survey. Please wait.</b></div>"
+          survey.completedHtml = "<div><b>{{ wait_msg }}</b></div>"
           {#  function (sender) {#}
           {#  document#}
           {#    .querySelector('#surveyResult')#}
