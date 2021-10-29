@@ -16,7 +16,7 @@
 15,How would you rate your overall programming experience?,radiogroup,1,"{""0"": ""Novice"", ""1"": ""Intermediate"", ""2"": ""Expert""}"
 16,How many years and/or months of overall programming experience do you have? (e.g. 1 year and 4 months),text,1,{}
 17,How many years and/or months of Python programming experience do you have? (e.g. 1 year and 4 months),text,1,{}
-18,What languages do you work with most frequently?,checkbox,4,"{""A"": ""Java"", ""B"": ""C"", ""C"": ""C++"", ""E"": ""C#"", ""F"": ""PHP"", ""G"": ""JavaScript"", ""H"": ""Visual Basic .Net"", ""I"": ""Perl"", ""J"": ""Assembly"", ""K"": ""Ruby"", ""L"": ""Delphi"", ""M"": ""Object Pascal"", ""N"": ""Swift"", ""O"": ""Objective C"", ""P"": ""MatLab"", ""Q"": ""R"", ""R"": ""PL/SQL"", ""S"": ""COBOL"", ""T"": ""Groovy"", ""Other"": """"}"
+18,What languages do you work with most frequently?,checkbox,4,"{""A"": ""Java"", ""B"": ""C"", ""C"": ""C++"", ""D"": ""Python"", ""E"": ""C#"", ""F"": ""PHP"", ""G"": ""JavaScript"", ""H"": ""Visual Basic .Net"", ""I"": ""Perl"", ""J"": ""Assembly"", ""K"": ""Ruby"", ""L"": ""Delphi"", ""M"": ""Object Pascal"", ""N"": ""Swift"", ""O"": ""Objective C"", ""P"": ""MatLab"", ""Q"": ""R"", ""R"": ""PL/SQL"", ""S"": ""COBOL"", ""T"": ""Groovy"", ""Other"": """"}"
 19,How challenging was it for you to learn how to program in Python?,rating,7,"{""0"": ""Very Low"", ""1"":"""", ""2"":"""", ""3"":"""", ""4"":"""", ""5"":"""", ""6"": ""Very High""}"
 20,"If anything, what did you find challenging about learning Python?",comment,3,{}
 21,What type of programming/development/technical problems do you find the most challenging?,radiogroup,1,"{""0"":""University problems"", ""1"":""Work problems"", ""2"":""Personal project/interest problems""}"
