@@ -220,8 +220,9 @@ def question(request, question_id):
                 # print("Given answer: %s" % given_answer)
 
                 matches = re.findall(question.answer, given_answer)
-                # print(str(matches))
-                # print(question.answer)
+                print(str(matches))
+                print(question.answer)
+                print(given_answer)
                 if not matches:
                     # print("Adding message to request")
                     # messages.info(request, 'Wrong answer!')
@@ -252,7 +253,11 @@ def question(request, question_id):
 
 
 def update_participant(request, survey_data=None, question_data=None):
-    experiment_id = request.session["experiment_id"]
+    experiment_id = request.session.get("experiment_id")
+
+    if experiment_id is None:
+        return
+
     experiment = Experiment.objects.get(id=request.session["experiment_id"])
 
     session_key = request.session.session_key
@@ -316,3 +321,5 @@ def activity(request):
         participant_activity.activity = payload["activity"]
         participant_activity.save()
         return HttpResponse(status=202)
+
+
