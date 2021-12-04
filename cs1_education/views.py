@@ -76,7 +76,6 @@ def experiment(request, experiment_id):
     if not request.session.exists(request.session.session_key):
         request.session.create()
 
-    print(request.session.session_key)
     request.session["experiment_id"] = experiment_id
 
     questions = experiment.question_order
