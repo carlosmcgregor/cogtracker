@@ -15,3 +15,40 @@
     /*transform: translate(-50%, -50%);*/
     transform: translateX(-50%);
 }
+
+.question-row {
+    height: 20vh;
+    overflow: auto;
+    font-size: 1.8em;
+}
+
+.question-hint {
+    height: 18vh;
+}
+
+.question-code-row {
+    height: 41vh;
+    overflow: auto;
+    font-size: 1.8em;
+}
+
+.question-code-hint {
+    height: 39vh;
+}
+
+.question-buttons .w-100 .btn {
+    font-size: 1.8em;
+}
+
+.btn {
+    font-size: 1.8em;
+}
+
+.question-top {
+    vertical-align: top;
+}
+
+.question-bottom {
+    vertical-align: bottom;
+}
+

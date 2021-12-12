@@ -240,7 +240,7 @@ def question(request, question_id):
     return render(request, 'question.html',
                   {"form": form,
                    "pre_text": markdown(question.pre_text),
-                   "code": replace_linebreaks(question.code, double=False),
+                   "code": add_newlines(replace_linebreaks(question.code, double=False), 15),
                    "post_text": markdown(question.post_text),
                    "next_question": request.session['next_question'],
                    "question_id": question_id,
@@ -249,6 +249,14 @@ def question(request, question_id):
                    "hints": hints,
                    "hint_timeout": hint_timeout,
                    "session_key": request.session.session_key})
+
+
+def add_newlines(string, total_lines):
+    num_lines = string.count("\n")
+    new_string = string + (("\n" * (total_lines - num_lines - 1)) if total_lines > num_lines else "")
+
+    print(new_string)
+    return string
 
 
 def update_participant(request, survey_data=None, question_data=None):

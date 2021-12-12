@@ -26,14 +26,14 @@ class ParticipantForm(forms.Form):
 
 
 class QuestionForm(forms.Form):
-    answer =  forms.CharField(widget=forms.Textarea(attrs={"rows": 3, "cols": 60}), label="")
+    answer =  forms.CharField(widget=forms.Textarea(attrs={"rows": 3, "cols": 60, 'style': 'font-size: 1.8em'}), label="")
                               # label='Please write your answer below and click "Next" when done:')
     helper = FormHelper()
     helper.layout = Layout(
         Fieldset(
             "",
             HTML(
-                """<h6>Please write your answer below (in multiple lines if the answer includes multiple lines of code):</h6>"""
+                """<h3>Please write your answer below (in multiple lines if the answer includes multiple lines of code):</h3>"""
             ),
             'answer',
             HTML(
