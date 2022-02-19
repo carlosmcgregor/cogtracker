@@ -33,7 +33,7 @@ class QuestionForm(forms.Form):
         Fieldset(
             "",
             HTML(
-                """<h3>Please write your answer below (in multiple lines if the answer includes multiple lines of code):</h3>"""
+                """<h4>Please write your answer below (in multiple lines if the answer includes multiple lines of code):</h4>"""
             ),
             'answer',
             HTML(

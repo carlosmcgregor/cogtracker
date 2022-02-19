@@ -17,31 +17,31 @@
 }
 
 .question-row {
-    height: 20vh;
+    height: 25vh;
     overflow: auto;
-    font-size: 1.8em;
+    font-size: 1.2em;
 }
 
 .question-hint {
-    height: 18vh;
+    height: 23vh;
 }
 
 .question-code-row {
-    height: 41vh;
+    height: 34vh;
     overflow: auto;
-    font-size: 1.8em;
+    font-size: 1.2em;
 }
 
 .question-code-hint {
-    height: 39vh;
+    height: 32vh;
 }
 
 .question-buttons .w-100 .btn {
-    font-size: 1.8em;
+    font-size: 1.2em;
 }
 
 .btn {
-    font-size: 1.8em;
+    font-size: 1.2em;
 }
 
 .question-top {
@@ -51,4 +51,3 @@
 .question-bottom {
     vertical-align: bottom;
 }
-
