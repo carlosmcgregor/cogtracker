@@ -15,6 +15,9 @@
             {% endautoescape %}
         </div>
         <div class="container">
+            <div id="time" class="alert alert-info"></div>
+        </div>
+        <div class="container">
             <form class="w-50" action="?" method="post">
                 {% crispy form %}
             </form>
@@ -30,4 +33,26 @@
             <a href="../ps/" class="btn btn-primary" role="button">Next</a>
         </div>
     </div>
+
+    <script>
+function startTime() {
+  const today = new Date();
+  let h = today.getHours();
+  let m = today.getMinutes();
+  let s = today.getSeconds();
+  let ms = today.getMilliseconds();
+  m = checkTime(m);
+  s = checkTime(s);
+  document.getElementById('time').innerHTML =  "Current time: " + h + ":" + m + ":" + s + "." + ms;
+  setTimeout(startTime, 250);
+}
+
+function checkTime(i) {
+  if (i < 10) {i = "0" + i};  // add zero in front of numbers < 10
+  return i;
+}
+
+startTime()
+</script>
+
 {% endblock %}
