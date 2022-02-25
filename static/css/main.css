@@ -17,19 +17,20 @@
 }
 
 .question-row {
-    height: 25vh;
+    /*height: 25vh;*/
     overflow: auto;
-    font-size: 1.2em;
+    font-size: 1.8em;
 }
 
 .question-hint {
-    height: 23vh;
+    height: 25vh;
+    font-size: 1.8em;
 }
 
 .question-code-row {
-    height: 34vh;
+    /*height: 34vh;*/
     overflow: auto;
-    font-size: 1.2em;
+    font-size: 1.8em;
 }
 
 .question-code-hint {
@@ -50,4 +51,8 @@
 
 .question-bottom {
     vertical-align: bottom;
+}
+
+pre {
+    white-space: pre-wrap;
 }
