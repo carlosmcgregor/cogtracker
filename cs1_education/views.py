@@ -121,15 +121,11 @@ def experiment(request, experiment_id):
     request.session['experiment_id'] = experiment_id
     request.session['on_question'] = False
     request.session['next_question'] = next_question
-    instructions = experiment.instructions
-
-    if experiment.check_answers:
-        instructions += '\n\n_Your answers will be automatically compared against the correct answer._'
 
     return render(request, 'experiment.html',
                   {"form": form,
                    "consent_form": markdown(experiment.consent_form, double=True),
-                   "instructions": markdown(experiment.instructions, double=True),
+                   "instructions": experiment.instructions,
                    "consent_form_display": consent_form_display,
                    "instructions_display": instructions_display,
                    "next_question": next_question,

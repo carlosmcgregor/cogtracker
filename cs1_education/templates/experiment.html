@@ -24,13 +24,22 @@
         </div>
     </div>
     <div id="instructions" style="display: {{ instructions_display }};">
+        <br/>
         <div class="container">
-            <br/>
-            <h3>Instructions</h3>
-            {% autoescape off %}
-                {{ instructions }}
-            {% endautoescape %}
-            <a href="../ps/" class="btn btn-primary" role="button">Next</a>
+            <div class="row">
+                <h3>Instructions</h3>
+            </div>
+            <div class="row p-3 h-50">
+                <div class="container">
+                    <p>Please play the following video to see the instructions:</p>
+                </div>
+                    {% autoescape off %}
+                        {{ instructions }}
+                    {% endautoescape %}
+            </div>
+            <div class="p-2">
+                <a href="../ps/" class="btn btn-primary float-right" role="button" style="float: right;">Continue</a>
+            </div>
         </div>
     </div>
 
