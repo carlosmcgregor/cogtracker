@@ -23,14 +23,14 @@
 }
 
 .question-hint {
-    height: 25vh;
-    font-size: 1.8em;
+    height: 19vh;
+    font-size: 1.4em;
 }
 
-.question-code-row {
-    /*height: 34vh;*/
-    overflow: auto;
-    font-size: 1.8em;
+.question-code-hint {
+    height: 26vh;
+    /*overflow: auto;*/
+    font-size: 1.2em;
 }
 
 .question-code-hint {
@@ -55,4 +55,5 @@
 
 pre {
     white-space: pre-wrap;
+    font-size: 1em;
 }
