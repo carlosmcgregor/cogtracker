@@ -19,12 +19,12 @@
 .question-row {
     /*height: 25vh;*/
     overflow: auto;
-    font-size: 1.8em;
+    font-size: 1.3em;
 }
 
 .question-hint {
-    height: 19vh;
-    font-size: 1.4em;
+    height: 20vh;
+    font-size: 1em;
 }
 
 .question-code-hint {
@@ -34,7 +34,7 @@
 }
 
 .question-code-hint {
-    height: 32vh;
+    height: 30vh;
 }
 
 .question-buttons .w-100 .btn {
@@ -55,5 +55,5 @@
 
 pre {
     white-space: pre-wrap;
-    font-size: 1em;
+    font-size: 0.95em;
 }
